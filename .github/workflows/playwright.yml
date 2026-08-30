@@ -13,33 +13,35 @@ jobs:
     environment: test-env
 
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
-        
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pytest-playwright python-dotenv allure-pytest
-        
-    - name: Install Playwright Browsers
-      run: playwright install --with-deps
-      
-    - name: Run Pytest with Allure
-      env:
-        # These map directly to the GitHub Settings -> Secrets
-        BASE_URL: ${{ secrets.BASE_URL }}
-        STANDARD_USER: ${{ secrets.STANDARD_USER }}
-        PASSWORD: ${{ secrets.PASSWORD }}
-      run: pytest tests/ --alluredir=allure-results
-      
-    - name: Upload Allure Results Artifact
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: allure-results
-        path: allure-results
-        retention-days: 7
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest-playwright python-dotenv allure-pytest
+
+      - name: Install Playwright Browsers
+        run: playwright install --with-deps
+
+      - name: Check test environment
+        run: |
+          echo "BASE_URL=$BASE_URL"
+          echo "SAUCE_USERNAME=$SAUCE_USERNAME"
+          echo "TEST_BUYER=$TEST_BUYER"
+          echo "SAUCE_PASSWORD is set: ${{ secrets.SAUCE_PASSWORD != '' }}"
+
+      - name: Run Pytest with Allure
+        run: pytest tests/ --alluredir=allure-results
+
+      - name: Upload Allure Results Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: allure-results
+          retention-days: 7
