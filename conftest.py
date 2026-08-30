@@ -33,7 +33,6 @@ def api_logged_in_page(browser: Browser):
     }])
 
     page = context.new_page()
-    integer_variable = 5
     page.goto(f"{os.getenv('BASE_URL')}/inventory.html")
 
     yield page
